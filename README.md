@@ -9,7 +9,7 @@ https://docs.oracle.com/cd/E41633_01/pt853pbh1/eng/pt/tsec/task_EnablingKerberos
 You need specify path to you keytab and service principal name in kerberos.properties
 
 
-#### Building it
+## Building it
 
 This is a maven project, and to build it use the following command
 
@@ -17,7 +17,7 @@ This is a maven project, and to build it use the following command
 $ mvn clean install
 ```
 
-#### Running it
+## Running it
 
 ```
 $ mvn spring-boot:run
