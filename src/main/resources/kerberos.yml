@@ -1,0 +1,9 @@
+
+app:
+  ad-domain: adserv.TF.LOC
+  ad-server: ldap://192.168.6.2:389
+  service-principal: HTTP/sia8-test.tf.loc:8080@TF.LOC
+  keytab-location: /opt/web.keytab
+  krb-conf-location: /opt/krb5.ini
+  ldap-search-base: OU\=Users-BSS,DC\=TF,DC\=Loc
+  ldap-search-filter: "(| (userPrincipalName={0}) (sAMAccountName={0}))"

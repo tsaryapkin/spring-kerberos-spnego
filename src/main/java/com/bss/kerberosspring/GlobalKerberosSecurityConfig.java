@@ -9,10 +9,9 @@ import org.springframework.security.kerberos.authentication.sun.GlobalSunJaasKer
 
 @Configuration
 @Profile("kerberos")
-@PropertySource(value={"classpath:kerberos.properties"})
 public class GlobalKerberosSecurityConfig {
 
-    @Value("${kerberos.krbConfLocation}")
+    @Value("${app.krb-conf-location}")
     private String krbConfLocation;
 
     @Bean
