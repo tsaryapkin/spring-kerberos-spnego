@@ -1,5 +1,6 @@
 package com.bss.kerberosspring;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +46,9 @@ public class AuthProviderConfig extends WebSecurityConfigurerAdapter {
     @Value("${app.ldap-search-filter}")
     private String ldapSearchFilter;
 
+    @Autowired
+    private KerberosServiceAuthenticationProvider kerberosServiceAuthenticationProvider;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -70,7 +74,7 @@ public class AuthProviderConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
                 .authenticationProvider(activeDirectoryLdapAuthenticationProvider())
-                .authenticationProvider(kerberosServiceAuthenticationProvider());
+                .authenticationProvider(kerberosServiceAuthenticationProvider);
     }
 
     @Bean
@@ -91,49 +95,49 @@ public class AuthProviderConfig extends WebSecurityConfigurerAdapter {
         return filter;
     }
 
-    @Bean
-    public KerberosServiceAuthenticationProvider kerberosServiceAuthenticationProvider() throws Exception {
-        KerberosServiceAuthenticationProvider provider = new KerberosServiceAuthenticationProvider();
-        provider.setTicketValidator(sunJaasKerberosTicketValidator());
-        provider.setUserDetailsService(ldapUserDetailsService());
-        return provider;
-    }
-
-    @Bean
-    public SunJaasKerberosTicketValidator sunJaasKerberosTicketValidator() {
-        SunJaasKerberosTicketValidator ticketValidator = new SunJaasKerberosTicketValidator();
-        ticketValidator.setServicePrincipal(servicePrincipal);
-        ticketValidator.setKeyTabLocation(new FileSystemResource(keytabLocation));
-        ticketValidator.setDebug(true);
-        return ticketValidator;
-    }
-
-    @Bean
-    public KerberosLdapContextSource kerberosLdapContextSource() throws Exception {
-        KerberosLdapContextSource contextSource = new KerberosLdapContextSource(adServer);
-        contextSource.setLoginConfig(loginConfig());
-        return contextSource;
-    }
-
-    public SunJaasKrb5LoginConfig loginConfig() throws Exception {
-        SunJaasKrb5LoginConfig loginConfig = new SunJaasKrb5LoginConfig();
-        loginConfig.setKeyTabLocation(new FileSystemResource(keytabLocation));
-        loginConfig.setServicePrincipal(servicePrincipal);
-        loginConfig.setDebug(true);
-        loginConfig.setIsInitiator(true);
-        loginConfig.afterPropertiesSet();
-        return loginConfig;
-    }
-
-    @Bean
-    public LdapUserDetailsService ldapUserDetailsService() throws Exception {
-        FilterBasedLdapUserSearch userSearch =
-                new FilterBasedLdapUserSearch(ldapSearchBase, ldapSearchFilter, kerberosLdapContextSource());
-        LdapUserDetailsService service =
-                new LdapUserDetailsService(userSearch, new ActiveDirectoryLdapAuthoritiesPopulator());
-        service.setUserDetailsMapper(new LdapUserDetailsMapper());
-        return service;
-    }
+//    @Bean
+//    public KerberosServiceAuthenticationProvider kerberosServiceAuthenticationProvider() throws Exception {
+//        KerberosServiceAuthenticationProvider provider = new KerberosServiceAuthenticationProvider();
+//        provider.setTicketValidator(sunJaasKerberosTicketValidator());
+//        provider.setUserDetailsService(ldapUserDetailsService());
+//        return provider;
+//    }
+//
+//    @Bean
+//    public SunJaasKerberosTicketValidator sunJaasKerberosTicketValidator() {
+//        SunJaasKerberosTicketValidator ticketValidator = new SunJaasKerberosTicketValidator();
+//        ticketValidator.setServicePrincipal(servicePrincipal);
+//        ticketValidator.setKeyTabLocation(new FileSystemResource(keytabLocation));
+//        ticketValidator.setDebug(true);
+//        return ticketValidator;
+//    }
+//
+//    @Bean
+//    public KerberosLdapContextSource kerberosLdapContextSource() throws Exception {
+//        KerberosLdapContextSource contextSource = new KerberosLdapContextSource(adServer);
+//        contextSource.setLoginConfig(loginConfig());
+//        return contextSource;
+//    }
+//
+//    public SunJaasKrb5LoginConfig loginConfig() throws Exception {
+//        SunJaasKrb5LoginConfig loginConfig = new SunJaasKrb5LoginConfig();
+//        loginConfig.setKeyTabLocation(new FileSystemResource(keytabLocation));
+//        loginConfig.setServicePrincipal(servicePrincipal);
+//        loginConfig.setDebug(true);
+//        loginConfig.setIsInitiator(true);
+//        loginConfig.afterPropertiesSet();
+//        return loginConfig;
+//    }
+//
+//    @Bean
+//    public LdapUserDetailsService ldapUserDetailsService() throws Exception {
+//        FilterBasedLdapUserSearch userSearch =
+//                new FilterBasedLdapUserSearch(ldapSearchBase, ldapSearchFilter, kerberosLdapContextSource());
+//        LdapUserDetailsService service =
+//                new LdapUserDetailsService(userSearch, new ActiveDirectoryLdapAuthoritiesPopulator());
+//        service.setUserDetailsMapper(new LdapUserDetailsMapper());
+//        return service;
+//    }
 
     @Bean
     @Override

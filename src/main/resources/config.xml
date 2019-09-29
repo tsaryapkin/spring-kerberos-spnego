@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:application.properties"/>
+
+    <bean class="org.springframework.security.kerberos.client.config.SunJaasKrb5LoginConfig" id="loginConfig" init-method="afterPropertiesSet">
+        <property name="keyTabLocation" value="${app.keytab-location}"/>
+        <property name="servicePrincipal" value="${app.service-principal}"/>
+        <property name="debug" value="true"/>
+        <property name="isInitiator" value="true"/>
+    </bean>
+
+    <bean class="org.springframework.security.kerberos.authentication.sun.SunJaasKerberosTicketValidator" id="kerberosTicketValidator">
+        <property name="servicePrincipal" value="${app.service-principal}"/>
+        <property name="keyTabLocation" value="${app.keytab-location}"/>
+        <property name="debug" value="true"/>
+    </bean>
+
+
+    <bean class="org.springframework.security.kerberos.authentication.KerberosServiceAuthenticationProvider" id="kerberosServiceAuthenticationProvider">
+        <property name="ticketValidator" ref="kerberosTicketValidator"/>
+        <property name="userDetailsService" ref="ldapUserDetailsService"/>
+    </bean>
+
+    <bean class="org.springframework.security.kerberos.client.ldap.KerberosLdapContextSource" id="contextSource">
+        <constructor-arg value="${app.ad-server}"/>
+        <property name="loginConfig" ref="loginConfig"/>
+    </bean>
+
+    <bean id="userSearch" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
+        <constructor-arg index="0" value="${app.ldap-search-base}"/>
+        <constructor-arg index="1" value="${app.ldap-search-filter}"/>
+        <constructor-arg index="2" ref="contextSource"/>
+    </bean>
+
+    <bean id="ldapUserDetailsService" class="org.springframework.security.ldap.userdetails.LdapUserDetailsService">
+        <constructor-arg index="0" ref="userSearch"/>
+        <constructor-arg index="1">
+            <bean class="com.bss.kerberosspring.ActiveDirectoryLdapAuthoritiesPopulator"/>
+        </constructor-arg>
+        <property name="userDetailsMapper">
+            <bean class="org.springframework.security.ldap.userdetails.LdapUserDetailsMapper"/>
+        </property>
+    </bean>
+
+</beans>

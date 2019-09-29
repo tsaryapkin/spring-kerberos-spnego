@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.security.ldap.DefaultSpringSecurityContextSource;
 
 @SpringBootApplication
+@ImportResource("classpath:config.xml")
 public class KerberosSpringApplication {
 
     public static void main(String[] args) {
